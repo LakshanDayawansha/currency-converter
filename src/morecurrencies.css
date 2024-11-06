@@ -1,0 +1,54 @@
+.more-currencies {
+  width: 25rem;
+  height: 30rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.more-currencies-item:hover {
+  background-color: #ddd;
+}
+
+.more-currencies p {
+  padding-left: 1rem;
+}
+
+.currencies-search {
+    position: sticky;
+    top: 0;
+    padding: 1rem;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #eee;
+    gap: 1rem;
+}
+
+.search-input {
+    padding: 0.5rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    flex: 2;
+}
+
+.cancel-button {
+    padding: 0.5rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.currency-with-flag {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjust the gap as needed */
+  }

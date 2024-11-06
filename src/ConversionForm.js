@@ -3,75 +3,146 @@ import DropDown from "./components/DropDown";
 import TextInput from "./components/TextInput";
 import { ArrowsDownUp } from "@phosphor-icons/react";
 import "./conversionform.css";
+import MoreCurrencies from "./MoreCurrencies";
+import CurrencyAPI from "@everapi/currencyapi-js";
 
 const ConversionForm = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isClicked, setIsClicked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isMore, setIsMore] = useState(false);
-  const [currencyData, setCurrencyData] = useState(null);
   const [error, setError] = useState(null);
+  const [currencyData, setCurrencyData] = useState();
   const [currencyCodes, setCurrencyCodes] = useState([]);
+  const [baseCurrency, setBaseCurrency] = useState("LKR");
+  const [targetCurrency, setTargetCurrency] = useState("USD");
+  const [isBaseCurrency, setIsBaseCurrency] = useState(false);
+  const [rate, setRate] = useState(0);
+  const [baseValue, setBaseValue] = useState(1);
+  const [targetValue, setTargetValue] = useState(1);
+  const options = ["USD", "LKR", "JPY", "INR", "KRW", "more.."];
+  const api = process.env.REACT_APP_API_KEY;
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8000/currencies");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        const codes = Object.keys(data);
-        setCurrencyData(data);
+        setIsLoading(true);
+        const client = new CurrencyAPI(api);
+        const data = await client.latest({
+          base_currency: baseCurrency,
+        });
+        setCurrencyData(data.data);
+        const codes = Object.keys(data.data);
         setCurrencyCodes(codes);
-        console.log(codes);
-        setError(null);
+        
+        
+        const newRate = data.data[targetCurrency].value;
+        setRate(newRate);
+        setTargetValue(baseValue * newRate);
+        
       } catch (err) {
         setError("Failed to fetch currency data");
         console.error("Error fetching data:", err);
       } finally {
-        const timer = setTimeout(() => {
-          setIsLoading(false);
-        }, 3000);
-        return () => clearTimeout(timer);
+        setIsLoading(false);
       }
     };
 
     fetchData();
-  }, []);
-
-  const handleClick = () => {
-    setIsClicked((prev) => !prev);
-  };
+  }, [baseCurrency, targetCurrency]); 
 
   const handleMoreCurrencies = (more) => {
     setIsMore(more);
   };
 
+  const handleBaseCurrency = (option) => {
+    if (option === "more..") {
+      setIsMore(true);
+      setIsBaseCurrency(true);
+    } else {
+      setBaseCurrency(option);
+    }
+  };
+
+  const handleMoreBaseCurrency = (option) => {
+    setBaseCurrency(option);
+    setIsMore(false);
+    setIsBaseCurrency(false);
+  };
+
+  const handleMoreTargetCurrency = (option) => {
+    setTargetCurrency(option);
+    setIsMore(false);
+  };
+
+  const handleTargetCurrency = (option) => {
+    if (option === "more..") {
+      setIsMore(true);
+    } else {
+      setTargetCurrency(option);
+    }
+  };
+
+  const handleTargetValue = (value) => {
+    setBaseValue(value);
+    if (currencyData) {
+      const currentRate = currencyData[targetCurrency].value;
+      setTargetValue(value * currentRate);
+    }
+  };
+
+  const handleSwap = () => {
+    setBaseCurrency(targetCurrency);
+    setTargetCurrency(baseCurrency);
+    
+  };
+
   return (
     <>
-      <div className={`converter-form ${isLoading ? "loading" : ""}`}>
+      <div
+        className={`converter-form ${isLoading ? "loading" : ""} ${
+          isMore ? "more" : ""
+        }`}
+      >
         <div className="header">
           <h1>Currency Converter</h1>
-        </div>
-        <div className="base-currency">
-          <DropDown moreOption={handleMoreCurrencies} />
-          <TextInput />
+          <p>With Live Exchange Rates</p>
         </div>
 
-        <div className="swap-btn">
+        <div className="base-currency">
+          <DropDown
+            selectOption={handleBaseCurrency}
+            options={options}
+            selectedOption={baseCurrency}
+          />
+          <TextInput getvalue={handleTargetValue} />
+        </div>
+
+        <div className="swap-btn" onClick={handleSwap}>
           <ArrowsDownUp size={24} />
         </div>
 
         <div className="target-currency">
-          <DropDown moreOption={handleMoreCurrencies} />
-          <TextInput />
+          <DropDown
+            selectOption={handleTargetCurrency}
+            options={options}
+            selectedOption={targetCurrency}
+          />
+          <TextInput setvalue={targetValue} viewonly={true} />
         </div>
-        <div className="rate">1 USD = 0.85 EUR</div>
+        <div className="rate">
+          1 {baseCurrency} = {rate} {targetCurrency}
+        </div>
       </div>
       <div className={`loader ${isLoading ? "active" : ""}`}></div>
       {isMore && (
-        <div className="more">
-          <h1>More Currencies</h1>
+        <div className="more-currencies">
+          <MoreCurrencies
+            currencies={currencyCodes}
+            moreOption={handleMoreCurrencies}
+            selectedOption={
+              isBaseCurrency ? handleMoreBaseCurrency : handleMoreTargetCurrency
+            }
+          />
         </div>
       )}
     </>
