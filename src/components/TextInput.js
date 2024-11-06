@@ -1,6 +1,7 @@
 import React from "react";
 import "./textinput.css";
 
+//setvalue value of the target currency
 const TextInput = ({ setvalue,getvalue, viewonly }) => {
 
   const handleChange = (event) => {
