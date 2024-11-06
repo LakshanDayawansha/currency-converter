@@ -46,14 +46,14 @@ const DropDown = ({ selectOption, options, selectedOption,flag }) => {
         className={`dropdown-menu ${isOpen ? "show" : ""}`}
       >
         {options.map((option, index) => (
-          <a
-            href=""
+          <button
+            type="button"
             className="dropdown-item"
             key={index}
             onClick={() => handleOptionSelet(option)}
           >
             {option}{ <CurrencyFlag currency={option} size="sm" />}
-          </a>
+          </button>
         ))}
       </div>
     </div>

@@ -132,6 +132,7 @@ const ConversionForm = () => {
           1 {baseCurrency} = {rate} {targetCurrency}
         </div>
       </div>
+      {error && (<div className="error"><p>{error}</p></div>)}
       <div className={`loader ${isLoading ? "active" : ""}`}></div>
       {isMore && (
         <div className="more-currencies">
