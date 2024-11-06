@@ -47,7 +47,7 @@ const DropDown = ({ selectOption, options, selectedOption,flag }) => {
       >
         {options.map((option, index) => (
           <a
-            href="#"
+            href=""
             className="dropdown-item"
             key={index}
             onClick={() => handleOptionSelet(option)}

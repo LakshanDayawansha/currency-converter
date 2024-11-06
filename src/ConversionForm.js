@@ -41,7 +41,6 @@ const ConversionForm = () => {
         
       } catch (err) {
         setError("Failed to fetch currency data");
-        console.error("Error fetching data:", err);
       } finally {
         setIsLoading(false);
       }
